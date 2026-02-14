@@ -32,5 +32,8 @@
   "trustedDependencies": [
     "sharp",
     "unrs-resolver"
-  ]
+  ],
+  "overrides": {
+    "lightningcss": "1.30.1"
+  }
 }
