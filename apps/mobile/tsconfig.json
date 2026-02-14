@@ -1,0 +1,11 @@
+{
+	"extends": "@websuite/typescript-config/react-native.json",
+	"compilerOptions": {
+		"strict": true,
+		"paths": {
+			"@/*": ["./*"]
+		}
+	},
+	"include": ["**/*.ts", "**/*.tsx", "nativewind-env.d.ts"],
+	"exclude": ["node_modules"]
+}

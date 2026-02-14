@@ -1,4 +1,15 @@
-# Next.js rules
+# Monorepo rules
+
+This is a Turbo monorepo with Bun workspaces.
+
+## Structure
+
+- `apps/web` — Next.js web application (App Router, Tailwind CSS v4, shadcn/ui)
+- `apps/mobile` — Expo React Native app (Expo Router, NativeWind v5, Tailwind CSS v4)
+- `packages/backend` — Shared backend logic, types, and contracts (used by web + mobile)
+- `packages/typescript-config` — Shared TypeScript configurations
+
+## Next.js (apps/web) rules
 
 - Use the App Router structure with `page.tsx` files in route directories.
 - Client components must be explicitly marked with `'use client'` at the top of the file.
@@ -60,11 +71,11 @@ Ask first:
 
 ### Project structure
 
-- see `/app` for routes
-<!-- - see `navbar.tsx` for the navbar -->
-- components live in `/components`
-- see `/lib` for backend logic
-- shadcn/ui components live in `/components/ui`
+- see `apps/web/app` for web routes
+- see `apps/mobile/app` for mobile routes
+- web components live in `apps/web/components`
+- see `packages/backend` for shared backend logic
+- shadcn/ui components live in `apps/web/components/ui`
 
 ### When stuck
 
