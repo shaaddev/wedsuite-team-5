@@ -10,6 +10,9 @@
   "scripts": {
     "dev": "turbo dev",
     "web:dev": "cd apps/web && bun run dev",
+    "web:check": "cd apps/web && bun run check",
+    "web:format": "cd apps/web && bun run format",
+    "web:format:unsafe": "cd apps/web && bun run format:unsafe",
     "web:build": "cd apps/web && bun run build",
     "mobile:dev": "cd apps/mobile && bun run dev",
     "build": "turbo build",

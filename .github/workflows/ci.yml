@@ -14,8 +14,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./tooling/setup
-      # - run: bun run check
-      - run: echo "Ignore - automatic pass"
+      - run: echo "Checking web code only!"
+      - run: bun run web:check
 
   build:
     runs-on: ubuntu-latest
