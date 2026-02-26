@@ -1,14 +1,31 @@
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 export function HomeScreen() {
-  return (
-    <View className="flex-1 items-center justify-center bg-white dark:bg-black">
-      <Text className="font-semibold text-3xl text-black tracking-tight dark:text-white">
-        WebSuite Mobile
-      </Text>
-      <Text className="mt-2 text-lg text-zinc-600 dark:text-zinc-400">
-        To get started, edit components/HomeScreen.tsx
-      </Text>
-    </View>
-  );
+	return (
+		<View style={styles.container}>
+			<Text style={styles.title}>WebSuite Mobile</Text>
+			<Text style={styles.subtitle}>
+				To get started, edit components/HomeScreen.tsx
+			</Text>
+		</View>
+	);
 }
+
+const styles = StyleSheet.create({
+	container: {
+		flex: 1,
+		alignItems: "center",
+		justifyContent: "center",
+		backgroundColor: "#ffffff",
+	},
+	title: {
+		fontSize: 32,
+		fontWeight: "700",
+		color: "#111827",
+	},
+	subtitle: {
+		marginTop: 8,
+		fontSize: 18,
+		color: "#4b5563",
+	},
+});

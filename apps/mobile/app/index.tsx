@@ -1,5 +1,5 @@
-import { HomeScreen } from "../components/HomeScreen";
+import { VendorsScreen } from "@/components/vendors-screen";
 
 export default function Index() {
-  return <HomeScreen />;
+	return <VendorsScreen />;
 }

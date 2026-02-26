@@ -1,7 +1,7 @@
 const { getDefaultConfig } = require("expo/metro-config");
-const { withNativeWind } = require("nativewind/metro");
 const path = require("node:path");
 
+// biome-ignore lint/correctness/noGlobalDirnameFilename: ignore
 const projectRoot = __dirname;
 const monorepoRoot = path.resolve(projectRoot, "../..");
 
@@ -13,8 +13,8 @@ config.watchFolders = [monorepoRoot];
 
 // Search for node_modules in both local and root directories
 config.resolver.nodeModulesPaths = [
-	path.resolve(projectRoot, "node_modules"),
-	path.resolve(monorepoRoot, "node_modules"),
+  path.resolve(projectRoot, "node_modules"),
+  path.resolve(monorepoRoot, "node_modules"),
 ];
 
-module.exports = withNativeWind(config, { input: "./global.css" });
+module.exports = config;
