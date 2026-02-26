@@ -5,39 +5,39 @@ import "./globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
 
 const dmSans = DM_Sans({
-  subsets: ["latin"],
-  variable: "--font-dm-sans",
+	subsets: ["latin"],
+	variable: "--font-dm-sans",
 });
 
 const cormorant = Cormorant_Garamond({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-cormorant",
+	subsets: ["latin"],
+	weight: ["300", "400", "500", "600", "700"],
+	variable: "--font-cormorant",
 });
 
 export const metadata: Metadata = {
-  title: "WedSuite | Curated Wedding Vendors",
-  description:
-    "Discover and book exceptional wedding vendors. Browse photographers, florists, venues, caterers, and more for your perfect celebration.",
+	title: "WedSuite | Curated Wedding Vendors",
+	description:
+		"Discover and book exceptional wedding vendors. Browse photographers, florists, venues, caterers, and more for your perfect celebration.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#5E7D60",
+	themeColor: "#5E7D60",
 };
 
 export default function RootLayout({
-  children,
+	children,
 }: Readonly<{
-  children: React.ReactNode;
+	children: React.ReactNode;
 }>) {
-  return (
-    <ClerkProvider>
-      <html className={`${dmSans.variable} ${cormorant.variable}`} lang="en">
-        <body className="font-sans antialiased">
-          {children}
-          <Analytics />
-        </body>
-      </html>
-    </ClerkProvider>
-  );
+	return (
+		<ClerkProvider>
+			<html className={`${dmSans.variable} ${cormorant.variable}`} lang="en">
+				<body className="font-sans antialiased">
+					{children}
+					<Analytics />
+				</body>
+			</html>
+		</ClerkProvider>
+	);
 }
