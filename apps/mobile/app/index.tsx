@@ -1,5 +1,5 @@
-import { VendorsScreen } from "@/components/vendors-screen";
+import { Redirect } from "expo-router";
 
 export default function Index() {
-	return <VendorsScreen />;
+	return <Redirect href="/(tabs)/vendors" />;
 }

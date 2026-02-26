@@ -11,9 +11,8 @@ export default function RootLayout() {
 	return (
 		<ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
 			<Stack>
-				<Stack.Screen name="index" options={{ title: "Vendors" }} />
+				<Stack.Screen name="(tabs)" options={{ headerShown: false }} />
 				<Stack.Screen name="vendors/[id]" options={{ title: "Vendor" }} />
-				<Stack.Screen name="dashboard" options={{ title: "Dashboard" }} />
 				<Stack.Screen name="onboarding" options={{ title: "Onboarding" }} />
 				<Stack.Screen name="sign-in" options={{ title: "Sign In" }} />
 				<Stack.Screen name="sign-up" options={{ title: "Sign Up" }} />

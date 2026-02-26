@@ -29,7 +29,7 @@ export default function OnboardingScreen() {
 		}
 
 		if (onboardingState.onboardingComplete) {
-			router.replace("/dashboard");
+			router.replace("/(tabs)/planning");
 		}
 	}, [
 		authLoaded,
