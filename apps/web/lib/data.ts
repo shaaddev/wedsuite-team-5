@@ -7,6 +7,8 @@ export type VendorCategory =
 	| "Wedding Planner"
 	| "Cake & Desserts";
 
+export type PriceBucket = "$" | "$$" | "$$$" | "$$$$";
+
 export interface Vendor {
 	id: string;
 	name: string;
@@ -220,6 +222,39 @@ export const categories: VendorCategory[] = [
 	"Wedding Planner",
 	"Cake & Desserts",
 ];
+
+export const priceBuckets: PriceBucket[] = ["$", "$$", "$$$", "$$$$"];
+
+export const uniqueLocations = Array.from(
+	new Set(vendors.map((vendor) => vendor.location)),
+).sort((left, right) => left.localeCompare(right));
+
+function parseMinimumPrice(priceRange: string) {
+	const [minimumPriceRaw] = priceRange.split("-");
+	const numericPrice = Number(
+		(minimumPriceRaw ?? "").replace(/\$/g, "").replace(/,/g, "").trim(),
+	);
+
+	return Number.isFinite(numericPrice) ? numericPrice : 0;
+}
+
+export function getPriceBucketFromRange(priceRange: string): PriceBucket {
+	const minimumPrice = parseMinimumPrice(priceRange);
+
+	if (minimumPrice < 2000) {
+		return "$";
+	}
+
+	if (minimumPrice < 5000) {
+		return "$$";
+	}
+
+	if (minimumPrice < 10000) {
+		return "$$$";
+	}
+
+	return "$$$$";
+}
 
 export const timelineItems: TimelineItem[] = [
 	{

@@ -1,10 +1,8 @@
-import type { Config } from "tailwindcss";
-
+// Tailwind is no longer used in the mobile app.
 export default {
-  content: ["./App.tsx", "./components/**/*.{ts,tsx}"],
-  presets: [require("nativewind/preset")],
-  theme: {
-    extend: {},
-  },
-  plugins: [],
-} satisfies Config;
+	content: [],
+	theme: {
+		extend: {},
+	},
+	plugins: [],
+};

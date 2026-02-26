@@ -1,5 +1,12 @@
 "use client";
 
+import {
+	SignedIn,
+	SignedOut,
+	SignInButton,
+	SignUpButton,
+	UserButton,
+} from "@clerk/nextjs";
 import { Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -17,7 +24,7 @@ export function SiteHeader() {
 	const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
 	return (
-		<header className="sticky top-0 z-50 border-border/60 border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
+		<header className="sticky top-0 z-50 border-border/60 border-b bg-background/80 backdrop-blur-xl supports-backdrop-filter:bg-background/60">
 			<div className="mx-auto flex h-[72px] max-w-7xl items-center justify-between px-6 lg:px-8">
 				<Link className="group flex items-center gap-1.5" href="/">
 					<span className="font-semibold font-serif text-2xl text-foreground tracking-tight transition-colors group-hover:text-primary">
@@ -49,13 +56,35 @@ export function SiteHeader() {
 				</nav>
 
 				<div className="hidden items-center gap-4 md:flex">
-					<Button
-						asChild
-						className="rounded-full px-6 font-medium text-xs uppercase tracking-widest"
-						size="sm"
-					>
-						<Link href="/dashboard">My Wedding</Link>
-					</Button>
+					<SignedOut>
+						<SignInButton mode="modal">
+							<Button
+								className="rounded-full px-6 font-medium text-xs uppercase tracking-widest"
+								size="sm"
+								variant="ghost"
+							>
+								Sign In
+							</Button>
+						</SignInButton>
+						<SignUpButton mode="modal">
+							<Button
+								className="rounded-full px-6 font-medium text-xs uppercase tracking-widest"
+								size="sm"
+							>
+								Get Started
+							</Button>
+						</SignUpButton>
+					</SignedOut>
+					<SignedIn>
+						<Button
+							asChild
+							className="rounded-full px-6 font-medium text-xs uppercase tracking-widest"
+							size="sm"
+						>
+							<Link href="/dashboard">My Wedding</Link>
+						</Button>
+						<UserButton afterSignOutUrl="/" />
+					</SignedIn>
 				</div>
 
 				<Button
@@ -92,12 +121,34 @@ export function SiteHeader() {
 							</Link>
 						))}
 						<div className="mt-4 border-border/60 border-t pt-4">
-							<Button
-								asChild
-								className="w-full rounded-full font-medium text-xs uppercase tracking-widest"
-							>
-								<Link href="/dashboard">My Wedding</Link>
-							</Button>
+							<SignedOut>
+								<div className="flex flex-col gap-3">
+									<SignInButton mode="modal">
+										<Button
+											className="w-full rounded-full font-medium text-xs uppercase tracking-widest"
+											variant="outline"
+										>
+											Sign In
+										</Button>
+									</SignInButton>
+									<SignUpButton mode="modal">
+										<Button className="w-full rounded-full font-medium text-xs uppercase tracking-widest">
+											Get Started
+										</Button>
+									</SignUpButton>
+								</div>
+							</SignedOut>
+							<SignedIn>
+								<Button
+									asChild
+									className="w-full rounded-full font-medium text-xs uppercase tracking-widest"
+								>
+									<Link href="/dashboard">My Wedding</Link>
+								</Button>
+								<div className="mt-3 flex justify-center">
+									<UserButton afterSignOutUrl="/" />
+								</div>
+							</SignedIn>
 						</div>
 					</nav>
 				</div>

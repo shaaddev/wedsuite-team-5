@@ -8,6 +8,10 @@
 		".": {
 			"types": "./src/index.ts",
 			"default": "./src/index.ts"
+		},
+		"./onboarding": {
+			"types": "./src/onboarding.ts",
+			"default": "./src/onboarding.ts"
 		}
 	},
 	"scripts": {
