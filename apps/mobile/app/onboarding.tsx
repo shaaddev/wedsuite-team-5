@@ -12,7 +12,7 @@ import { getOnboardingState } from "@/lib/onboarding";
 
 export default function OnboardingScreen() {
 	const router = useRouter();
-	const { isLoaded: authLoaded, isSignedIn } = useAuth();
+	const { getToken, isLoaded: authLoaded, isSignedIn } = useAuth();
 	const { isLoaded: userLoaded, user } = useUser();
 	const [isPending, setIsPending] = useState(false);
 
@@ -49,15 +49,31 @@ export default function OnboardingScreen() {
 
 		setIsPending(true);
 		try {
-			await user.update({
-				unsafeMetadata: {
-					role,
-					onboardingComplete: true,
-					onboardingCompletedAt: new Date().toISOString(),
-					coupleProfile: role === "couple" ? data : null,
-					vendorProfile: role === "vendor" ? data : null,
+			const token = await getToken();
+			if (!token) {
+				throw new Error("Missing session token.");
+			}
+
+			const backendBaseUrl =
+				process.env.EXPO_PUBLIC_BACKEND_URL ?? "http://localhost:3000";
+			const response = await fetch(`${backendBaseUrl}/api/onboarding`, {
+				method: "POST",
+				headers: {
+					Authorization: `Bearer ${token}`,
+					"Content-Type": "application/json",
 				},
+				body: JSON.stringify({
+					role,
+					data,
+				}),
 			});
+
+			if (!response.ok) {
+				const result = (await response.json()) as { error?: string };
+				throw new Error(result.error ?? "Unable to save onboarding.");
+			}
+
+			await user.reload();
 			router.replace("/dashboard");
 		} catch (error) {
 			Alert.alert(

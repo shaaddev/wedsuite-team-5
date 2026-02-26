@@ -1,26 +1,13 @@
-export type UserRole = "vendor" | "couple";
-
-export interface CoupleOnboardingData {
-	partnerOneName: string;
-	partnerTwoName: string;
-	weddingDate: string;
-	location: string;
-}
-
-export interface VendorOnboardingData {
-	businessName: string;
-	category: string;
-	location: string;
-	startingPrice: string;
-}
+import { isUserRole, type UserRole } from "@websuite/backend/onboarding";
+export type {
+	CoupleOnboardingData,
+	UserRole,
+	VendorOnboardingData,
+} from "@websuite/backend/onboarding";
 
 interface OnboardingMetadataRecord {
 	role?: unknown;
 	onboardingComplete?: unknown;
-}
-
-export function isUserRole(value: unknown): value is UserRole {
-	return value === "vendor" || value === "couple";
 }
 
 export function getOnboardingState(publicMetadata: unknown) {

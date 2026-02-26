@@ -1,18 +1,10 @@
-export type UserRole = "vendor" | "couple";
+import { isUserRole, type UserRole } from "@websuite/backend/onboarding";
 
-export interface CoupleOnboardingData {
-	partnerOneName: string;
-	partnerTwoName: string;
-	weddingDate: string;
-	location: string;
-}
-
-export interface VendorOnboardingData {
-	businessName: string;
-	category: string;
-	location: string;
-	startingPrice: string;
-}
+export type {
+	CoupleOnboardingData,
+	UserRole,
+	VendorOnboardingData,
+} from "@websuite/backend/onboarding";
 
 interface MetadataShape {
 	role?: unknown;
@@ -26,10 +18,6 @@ interface UserWithMetadata {
 
 function isObjectRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null;
-}
-
-export function isUserRole(value: unknown): value is UserRole {
-	return value === "vendor" || value === "couple";
 }
 
 export function getOnboardingState(user: UserWithMetadata | null | undefined) {
