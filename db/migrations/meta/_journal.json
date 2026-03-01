@@ -8,6 +8,20 @@
       "when": 1772339781375,
       "tag": "0000_many_snowbird",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1772390213377,
+      "tag": "0001_tricky_devos",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1772390461658,
+      "tag": "0002_burly_mindworm",
+      "breakpoints": true
     }
   ]
 }
