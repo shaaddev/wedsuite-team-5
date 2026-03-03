@@ -2,15 +2,15 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { DashboardScreen } from "@/components/dashboard-screen";
 import { RequireAuth } from "@/components/require-auth";
-import { authClient } from "@/lib/auth-client";
+import { useMobileSession } from "@/lib/session-context";
 
 export default function PlanningTab() {
 	const router = useRouter();
-	const { data: session, isPending } = authClient.useSession();
+	const { isLoading, user } = useMobileSession();
 	const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
 
 	useEffect(() => {
-		if (isPending || !session?.user) {
+		if (isLoading || !user) {
 			return;
 		}
 
@@ -47,7 +47,7 @@ export default function PlanningTab() {
 			setIsCheckingOnboarding(false);
 			router.replace("/onboarding");
 		});
-	}, [isPending, router, session?.user]);
+	}, [isLoading, router, user]);
 
 	if (isCheckingOnboarding) {
 		return null;

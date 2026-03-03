@@ -2,21 +2,22 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { AuthForm } from "@/components/auth-forms";
 import { authClient } from "@/lib/auth-client";
+import { useMobileSession } from "@/lib/session-context";
 
 export default function SignUpScreen() {
 	const router = useRouter();
-	const { data: session, isPending: sessionPending } = authClient.useSession();
+	const { isLoading, refreshSession, setUser, user } = useMobileSession();
 	const [isPending, setIsPending] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 
 	useEffect(() => {
-		if (sessionPending) {
+		if (isLoading) {
 			return;
 		}
-		if (session?.user) {
+		if (user) {
 			router.replace("/onboarding");
 		}
-	}, [router, session?.user, sessionPending]);
+	}, [isLoading, router, user]);
 
 	const onSubmit = async (email: string, password: string) => {
 		if (!email || !password) {
@@ -37,6 +38,11 @@ export default function SignUpScreen() {
 				setErrorMessage(response.error.message ?? "Unable to sign up.");
 				return;
 			}
+			setUser({
+				email,
+				name: email.split("@")[0] ?? "WedSuite User",
+			});
+			await refreshSession();
 			router.replace("/onboarding");
 		} catch {
 			setErrorMessage("Unable to sign up. Please try again.");

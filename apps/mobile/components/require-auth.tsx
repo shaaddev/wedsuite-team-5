@@ -1,7 +1,7 @@
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
-import { authClient } from "@/lib/auth-client";
+import { useMobileSession } from "@/lib/session-context";
 
 interface RequireAuthProps {
 	children: React.ReactNode;
@@ -9,19 +9,19 @@ interface RequireAuthProps {
 
 export function RequireAuth({ children }: RequireAuthProps) {
 	const router = useRouter();
-	const { data: session, isPending } = authClient.useSession();
+	const { isLoading, user } = useMobileSession();
 
 	useEffect(() => {
-		if (isPending) {
+		if (isLoading) {
 			return;
 		}
 
-		if (!session?.user) {
+		if (!user) {
 			router.replace("/sign-in");
 		}
-	}, [isPending, router, session?.user]);
+	}, [isLoading, router, user]);
 
-	if (isPending) {
+	if (isLoading) {
 		return (
 			<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
 				<ActivityIndicator />
@@ -29,7 +29,7 @@ export function RequireAuth({ children }: RequireAuthProps) {
 		);
 	}
 
-	if (!session?.user) {
+	if (!user) {
 		return null;
 	}
 

@@ -2,7 +2,7 @@ import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, View } from "react-native";
 import { OnboardingForm } from "@/components/onboarding-form";
-import { authClient } from "@/lib/auth-client";
+import { useMobileSession } from "@/lib/session-context";
 import type {
 	CoupleOnboardingData,
 	UserRole,
@@ -16,7 +16,7 @@ interface OnboardingStatus {
 
 export default function OnboardingScreen() {
 	const router = useRouter();
-	const { data: session, isPending: sessionPending } = authClient.useSession();
+	const { isLoading, user } = useMobileSession();
 	const [status, setStatus] = useState<OnboardingStatus>({
 		role: null,
 		onboardingComplete: false,
@@ -25,11 +25,11 @@ export default function OnboardingScreen() {
 	const [isPending, setIsPending] = useState(false);
 
 	useEffect(() => {
-		if (sessionPending) {
+		if (isLoading) {
 			return;
 		}
 
-		if (!session?.user) {
+		if (!user) {
 			router.replace("/sign-in");
 			return;
 		}
@@ -60,13 +60,13 @@ export default function OnboardingScreen() {
 		loadStatus().catch(() => {
 			setIsStatusLoading(false);
 		});
-	}, [router, session?.user, sessionPending]);
+	}, [isLoading, router, user]);
 
 	const onSubmit = async (
 		role: UserRole,
 		data: CoupleOnboardingData | VendorOnboardingData,
 	) => {
-		if (!session?.user) {
+		if (!user) {
 			return;
 		}
 
@@ -102,7 +102,7 @@ export default function OnboardingScreen() {
 		}
 	};
 
-	if (sessionPending || isStatusLoading) {
+	if (isLoading || isStatusLoading) {
 		return (
 			<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
 				<ActivityIndicator />
