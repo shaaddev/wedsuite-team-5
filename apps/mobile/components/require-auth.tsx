@@ -1,7 +1,7 @@
-import { useAuth } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { authClient } from "@/lib/auth-client";
 
 interface RequireAuthProps {
 	children: React.ReactNode;
@@ -9,19 +9,19 @@ interface RequireAuthProps {
 
 export function RequireAuth({ children }: RequireAuthProps) {
 	const router = useRouter();
-	const { isLoaded, isSignedIn } = useAuth();
+	const { data: session, isPending } = authClient.useSession();
 
 	useEffect(() => {
-		if (!isLoaded) {
+		if (isPending) {
 			return;
 		}
 
-		if (!isSignedIn) {
+		if (!session?.user) {
 			router.replace("/sign-in");
 		}
-	}, [isLoaded, isSignedIn, router]);
+	}, [isPending, router, session?.user]);
 
-	if (!isLoaded) {
+	if (isPending) {
 		return (
 			<View style={{ flex: 1, alignItems: "center", justifyContent: "center" }}>
 				<ActivityIndicator />
@@ -29,7 +29,7 @@ export function RequireAuth({ children }: RequireAuthProps) {
 		);
 	}
 
-	if (!isSignedIn) {
+	if (!session?.user) {
 		return null;
 	}
 

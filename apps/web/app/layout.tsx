@@ -2,7 +2,6 @@ import { Analytics } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, DM_Sans } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 
 const dmSans = DM_Sans({
 	subsets: ["latin"],
@@ -31,13 +30,11 @@ export default function RootLayout({
 	children: React.ReactNode;
 }>) {
 	return (
-		<ClerkProvider>
-			<html className={`${dmSans.variable} ${cormorant.variable}`} lang="en">
-				<body className="font-sans antialiased">
-					{children}
-					<Analytics />
-				</body>
-			</html>
-		</ClerkProvider>
+		<html className={`${dmSans.variable} ${cormorant.variable}`} lang="en">
+			<body className="font-sans antialiased">
+				{children}
+				<Analytics />
+			</body>
+		</html>
 	);
 }

@@ -1,15 +1,14 @@
-import { useAuth, useClerk, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 import { AppButton, Screen, uiStyles } from "@/components/ui";
+import { authClient } from "@/lib/auth-client";
 
 export default function UserTab() {
 	const router = useRouter();
-	const { isLoaded, isSignedIn } = useAuth();
-	const { signOut } = useClerk();
-	const { user } = useUser();
+	const { data: session, isPending } = authClient.useSession();
+	const isSignedIn = Boolean(session?.user);
 
-	if (!isLoaded) {
+	if (isPending) {
 		return (
 			<Screen>
 				<Text style={uiStyles.subheading}>Loading user...</Text>
@@ -40,7 +39,7 @@ export default function UserTab() {
 		<Screen>
 			<Text style={uiStyles.heading}>Your Account</Text>
 			<Text style={[uiStyles.subheading, styles.copy]}>
-				{user?.primaryEmailAddress?.emailAddress ?? "Signed in"}
+				{session?.user?.email ?? "Signed in"}
 			</Text>
 			<View style={styles.actions}>
 				<AppButton
@@ -51,7 +50,7 @@ export default function UserTab() {
 				<AppButton
 					label="Sign Out"
 					onPress={async () => {
-						await signOut();
+						await authClient.signOut();
 						router.replace("/sign-in");
 					}}
 				/>

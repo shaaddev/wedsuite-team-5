@@ -1,74 +1,26 @@
-import { useAuth, useSignIn, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { AuthForm } from "@/components/auth-forms";
-import { getOnboardingState } from "@/lib/onboarding";
+import { authClient } from "@/lib/auth-client";
 
 export default function SignInScreen() {
 	const router = useRouter();
-	const { isSignedIn } = useAuth();
-	const { user } = useUser();
-	const { isLoaded, signIn, setActive } = useSignIn();
-	const [isCodeStep, setIsCodeStep] = useState(false);
+	const { data: session, isPending: sessionPending } = authClient.useSession();
 	const [isPending, setIsPending] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 
 	useEffect(() => {
-		if (!isSignedIn) {
+		if (sessionPending) {
 			return;
 		}
-
-		const { onboardingComplete } = getOnboardingState(user);
-		router.replace(onboardingComplete ? "/(tabs)/planning" : "/onboarding");
-	}, [isSignedIn, router, user]);
-
-	const onRequestCode = async (email: string) => {
-		if (!isLoaded) {
-			return;
+		if (session?.user) {
+			router.replace("/onboarding");
 		}
-		if (!email) {
-			setErrorMessage("Please enter your email.");
-			return;
-		}
+	}, [router, session?.user, sessionPending]);
 
-		setErrorMessage("");
-		setIsPending(true);
-
-		try {
-			await signIn.create({ identifier: email });
-			const supportedFirstFactors = signIn.supportedFirstFactors ?? [];
-			const emailFactor = supportedFirstFactors.find(
-				(factor) =>
-					factor.strategy === "email_code" && "emailAddressId" in factor,
-			);
-
-			if (!emailFactor || !("emailAddressId" in emailFactor)) {
-				setErrorMessage("Email verification is not enabled for this account.");
-				return;
-			}
-
-			await signIn.prepareFirstFactor({
-				strategy: "email_code",
-				emailAddressId: emailFactor.emailAddressId,
-			});
-			setIsCodeStep(true);
-		} catch (error) {
-			setErrorMessage(
-				error instanceof Error
-					? error.message
-					: "Unable to send verification code.",
-			);
-		} finally {
-			setIsPending(false);
-		}
-	};
-
-	const onVerifyCode = async (code: string) => {
-		if (!isLoaded) {
-			return;
-		}
-		if (!code) {
-			setErrorMessage("Please enter the verification code.");
+	const onSubmit = async (email: string, password: string) => {
+		if (!email || !password) {
+			setErrorMessage("Please enter both email and password.");
 			return;
 		}
 
@@ -76,20 +28,17 @@ export default function SignInScreen() {
 		setIsPending(true);
 
 		try {
-			const result = await signIn.attemptFirstFactor({
-				strategy: "email_code",
-				code,
+			const response = await authClient.signIn.email({
+				email,
+				password,
 			});
-			if (result.status === "complete" && result.createdSessionId) {
-				await setActive({ session: result.createdSessionId });
-				router.replace("/onboarding");
+			if (response.error) {
+				setErrorMessage(response.error.message ?? "Unable to sign in.");
 				return;
 			}
-			setErrorMessage("Verification is incomplete. Try again.");
-		} catch (error) {
-			setErrorMessage(
-				error instanceof Error ? error.message : "Unable to verify code.",
-			);
+			router.replace("/onboarding");
+		} catch {
+			setErrorMessage("Unable to sign in. Please try again.");
 		} finally {
 			setIsPending(false);
 		}
@@ -98,24 +47,13 @@ export default function SignInScreen() {
 	return (
 		<AuthForm
 			title="Sign In"
-			subtitle={
-				isCodeStep
-					? "Enter the verification code sent to your email."
-					: "Enter your email to receive a verification code."
-			}
-			requestCodeLabel="Send Verification Code"
-			verifyCodeLabel="Verify & Continue"
+			subtitle="Access your WedSuite account."
+			submitLabel="Continue"
 			secondaryHref="/sign-up"
 			secondaryLabel="Need an account? Sign up"
 			isPending={isPending}
 			errorMessage={errorMessage}
-			isCodeStep={isCodeStep}
-			onRequestCode={onRequestCode}
-			onVerifyCode={onVerifyCode}
-			onUseDifferentEmail={() => {
-				setIsCodeStep(false);
-				setErrorMessage("");
-			}}
+			onSubmit={onSubmit}
 		/>
 	);
 }

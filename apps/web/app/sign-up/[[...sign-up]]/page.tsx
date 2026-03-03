@@ -1,17 +1,9 @@
-import { SignUp } from "@clerk/nextjs";
+import { AuthForm } from "@/components/auth-form";
 
 export default function SignUpPage() {
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-background px-6 py-10">
-			<SignUp
-				appearance={{
-					elements: {
-						card: "shadow-sm",
-					},
-				}}
-				signInUrl="/sign-in"
-				fallbackRedirectUrl="/onboarding"
-			/>
+			<AuthForm mode="sign-up" />
 		</div>
 	);
 }

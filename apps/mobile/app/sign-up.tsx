@@ -1,68 +1,26 @@
-import { useAuth, useSignUp, useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { AuthForm } from "@/components/auth-forms";
-import { getOnboardingState } from "@/lib/onboarding";
+import { authClient } from "@/lib/auth-client";
 
 export default function SignUpScreen() {
 	const router = useRouter();
-	const { isSignedIn } = useAuth();
-	const { user } = useUser();
-	const { isLoaded, signUp, setActive } = useSignUp();
-	const [isCodeStep, setIsCodeStep] = useState(false);
+	const { data: session, isPending: sessionPending } = authClient.useSession();
 	const [isPending, setIsPending] = useState(false);
 	const [errorMessage, setErrorMessage] = useState("");
 
 	useEffect(() => {
-		if (!isSignedIn) {
+		if (sessionPending) {
 			return;
 		}
-
-		const { onboardingComplete } = getOnboardingState(user);
-		router.replace(onboardingComplete ? "/(tabs)/planning" : "/onboarding");
-	}, [isSignedIn, router, user]);
-
-	const onRequestCode = async (email: string) => {
-		if (!isLoaded) {
-			return;
+		if (session?.user) {
+			router.replace("/onboarding");
 		}
-		if (!email) {
-			setErrorMessage("Please enter your email.");
-			return;
-		}
+	}, [router, session?.user, sessionPending]);
 
-		setErrorMessage("");
-		setIsPending(true);
-
-		try {
-			const result = await signUp.create({
-				emailAddress: email,
-			});
-			if (result.unverifiedFields.includes("email_address")) {
-				await signUp.prepareEmailAddressVerification({
-					strategy: "email_code",
-				});
-				setIsCodeStep(true);
-				return;
-			}
-			setErrorMessage("Unable to start email verification.");
-		} catch (error) {
-			setErrorMessage(
-				error instanceof Error
-					? error.message
-					: "Unable to send verification code.",
-			);
-		} finally {
-			setIsPending(false);
-		}
-	};
-
-	const onVerifyCode = async (code: string) => {
-		if (!isLoaded) {
-			return;
-		}
-		if (!code) {
-			setErrorMessage("Please enter the verification code.");
+	const onSubmit = async (email: string, password: string) => {
+		if (!email || !password) {
+			setErrorMessage("Please enter both email and password.");
 			return;
 		}
 
@@ -70,19 +28,18 @@ export default function SignUpScreen() {
 		setIsPending(true);
 
 		try {
-			const result = await signUp.attemptEmailAddressVerification({
-				code,
+			const response = await authClient.signUp.email({
+				email,
+				password,
+				name: email.split("@")[0] ?? "WedSuite User",
 			});
-			if (result.status === "complete" && result.createdSessionId) {
-				await setActive({ session: result.createdSessionId });
-				router.replace("/onboarding");
+			if (response.error) {
+				setErrorMessage(response.error.message ?? "Unable to sign up.");
 				return;
 			}
-			setErrorMessage("Verification is incomplete. Try again.");
-		} catch (error) {
-			setErrorMessage(
-				error instanceof Error ? error.message : "Unable to verify code.",
-			);
+			router.replace("/onboarding");
+		} catch {
+			setErrorMessage("Unable to sign up. Please try again.");
 		} finally {
 			setIsPending(false);
 		}
@@ -91,24 +48,13 @@ export default function SignUpScreen() {
 	return (
 		<AuthForm
 			title="Sign Up"
-			subtitle={
-				isCodeStep
-					? "Enter the verification code sent to your email."
-					: "Enter your email to create an account."
-			}
-			requestCodeLabel="Send Verification Code"
-			verifyCodeLabel="Verify & Create Account"
+			subtitle="Create your WedSuite account."
+			submitLabel="Create Account"
 			secondaryHref="/sign-in"
 			secondaryLabel="Already have an account? Sign in"
 			isPending={isPending}
 			errorMessage={errorMessage}
-			isCodeStep={isCodeStep}
-			onRequestCode={onRequestCode}
-			onVerifyCode={onVerifyCode}
-			onUseDifferentEmail={() => {
-				setIsCodeStep(false);
-				setErrorMessage("");
-			}}
+			onSubmit={onSubmit}
 		/>
 	);
 }

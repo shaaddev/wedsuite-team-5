@@ -1,24 +1,57 @@
-import { useUser } from "@clerk/clerk-expo";
 import { useRouter } from "expo-router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { DashboardScreen } from "@/components/dashboard-screen";
 import { RequireAuth } from "@/components/require-auth";
-import { getOnboardingState } from "@/lib/onboarding";
+import { authClient } from "@/lib/auth-client";
 
 export default function PlanningTab() {
 	const router = useRouter();
-	const { isLoaded, user } = useUser();
-	const { onboardingComplete } = getOnboardingState(user);
+	const { data: session, isPending } = authClient.useSession();
+	const [isCheckingOnboarding, setIsCheckingOnboarding] = useState(true);
 
 	useEffect(() => {
-		if (!isLoaded) {
+		if (isPending || !session?.user) {
 			return;
 		}
 
-		if (!onboardingComplete) {
+		const backendBaseUrl =
+			process.env.EXPO_PUBLIC_BACKEND_URL ?? "http://localhost:3000";
+
+		const checkOnboarding = async () => {
+			try {
+				const response = await fetch(
+					`${backendBaseUrl}/api/onboarding/status`,
+					{
+						credentials: "include",
+					},
+				);
+
+				if (!response.ok) {
+					router.replace("/onboarding");
+					return;
+				}
+
+				const result = (await response.json()) as {
+					onboardingComplete?: boolean;
+				};
+
+				if (!result.onboardingComplete) {
+					router.replace("/onboarding");
+				}
+			} finally {
+				setIsCheckingOnboarding(false);
+			}
+		};
+
+		checkOnboarding().catch(() => {
+			setIsCheckingOnboarding(false);
 			router.replace("/onboarding");
-		}
-	}, [isLoaded, onboardingComplete, router]);
+		});
+	}, [isPending, router, session?.user]);
+
+	if (isCheckingOnboarding) {
+		return null;
+	}
 
 	return (
 		<RequireAuth>

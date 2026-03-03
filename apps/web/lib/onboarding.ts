@@ -11,10 +11,10 @@ interface OnboardingMetadataRecord {
 	onboardingComplete?: unknown;
 }
 
-export function getOnboardingState(publicMetadata: unknown) {
+export function getOnboardingState(source: unknown) {
 	const metadata =
-		typeof publicMetadata === "object" && publicMetadata
-			? (publicMetadata as OnboardingMetadataRecord)
+		typeof source === "object" && source
+			? (source as OnboardingMetadataRecord)
 			: null;
 
 	const role = isUserRole(metadata?.role) ? metadata.role : null;

@@ -1,13 +1,14 @@
-import { auth, clerkClient } from "@clerk/nextjs/server";
-import {
-	buildOnboardingPublicMetadata,
-	parseOnboardingPayload,
-} from "@websuite/backend/onboarding";
+import { auth } from "@websuite/backend/lib/auth";
+import { upsertOnboardingProfile } from "@websuite/backend/lib/onboarding-profile";
+import { parseOnboardingPayload } from "@websuite/backend/onboarding";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
-	const { userId } = await auth();
-	if (!userId) {
+	const session = await auth.api.getSession({
+		headers: request.headers,
+	});
+
+	if (!session?.user?.id) {
 		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 	}
 
@@ -20,10 +21,7 @@ export async function POST(request: Request) {
 		);
 	}
 
-	const client = await clerkClient();
-	await client.users.updateUserMetadata(userId, {
-		publicMetadata: buildOnboardingPublicMetadata(payload),
-	});
+	await upsertOnboardingProfile(session.user.id, payload);
 
 	return NextResponse.json({ success: true });
 }

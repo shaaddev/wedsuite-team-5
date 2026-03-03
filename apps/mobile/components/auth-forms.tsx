@@ -6,34 +6,26 @@ import { AppButton, AppInput, Screen, uiStyles } from "@/components/ui";
 interface AuthFormProps {
 	title: string;
 	subtitle: string;
-	requestCodeLabel: string;
-	verifyCodeLabel: string;
+	submitLabel: string;
 	secondaryHref: "/sign-in" | "/sign-up";
 	secondaryLabel: string;
 	isPending: boolean;
 	errorMessage: string;
-	isCodeStep: boolean;
-	onRequestCode: (email: string) => void;
-	onVerifyCode: (code: string) => void;
-	onUseDifferentEmail?: () => void;
+	onSubmit: (email: string, password: string) => void;
 }
 
 export function AuthForm({
 	title,
 	subtitle,
-	requestCodeLabel,
-	verifyCodeLabel,
+	submitLabel,
 	secondaryHref,
 	secondaryLabel,
 	isPending,
 	errorMessage,
-	isCodeStep,
-	onRequestCode,
-	onVerifyCode,
-	onUseDifferentEmail,
+	onSubmit,
 }: AuthFormProps) {
 	const [email, setEmail] = useState("");
-	const [code, setCode] = useState("");
+	const [password, setPassword] = useState("");
 
 	return (
 		<Screen style={styles.screen}>
@@ -41,49 +33,31 @@ export function AuthForm({
 				<Text style={uiStyles.heading}>{title}</Text>
 				<Text style={[uiStyles.subheading, styles.subtitle]}>{subtitle}</Text>
 
-				{isCodeStep ? (
-					<View style={uiStyles.section}>
-						<Text style={uiStyles.label}>Verification Code</Text>
-						<AppInput
-							value={code}
-							onChangeText={setCode}
-							placeholder="123456"
-						/>
-						{onUseDifferentEmail ? (
-							<AppButton
-								label="Use Different Email"
-								onPress={onUseDifferentEmail}
-								variant="outline"
-							/>
-						) : null}
-					</View>
-				) : (
-					<View style={uiStyles.section}>
-						<Text style={uiStyles.label}>Email</Text>
-						<AppInput
-							value={email}
-							onChangeText={setEmail}
-							placeholder="you@example.com"
-						/>
-					</View>
-				)}
+				<View style={uiStyles.section}>
+					<Text style={uiStyles.label}>Email</Text>
+					<AppInput
+						value={email}
+						onChangeText={setEmail}
+						placeholder="you@example.com"
+					/>
+				</View>
+
+				<View style={uiStyles.section}>
+					<Text style={uiStyles.label}>Password</Text>
+					<AppInput
+						value={password}
+						onChangeText={setPassword}
+						placeholder="Password"
+						secureTextEntry
+					/>
+				</View>
 
 				{errorMessage ? <Text style={styles.error}>{errorMessage}</Text> : null}
 
 				<View style={styles.actions}>
 					<AppButton
-						label={
-							isPending
-								? "Please wait..."
-								: isCodeStep
-									? verifyCodeLabel
-									: requestCodeLabel
-						}
-						onPress={() =>
-							isCodeStep
-								? onVerifyCode(code.trim())
-								: onRequestCode(email.trim())
-						}
+						label={isPending ? "Please wait..." : submitLabel}
+						onPress={() => onSubmit(email.trim(), password)}
 						disabled={isPending}
 					/>
 					<Link href={secondaryHref} style={styles.secondaryLink}>

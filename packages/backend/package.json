@@ -12,6 +12,18 @@
 		"./onboarding": {
 			"types": "./src/onboarding.ts",
 			"default": "./src/onboarding.ts"
+		},
+		"./lib/auth": {
+			"types": "./lib/auth.ts",
+			"default": "./lib/auth.ts"
+		},
+		"./lib/auth-client": {
+			"types": "./lib/auth-client.ts",
+			"default": "./lib/auth-client.ts"
+		},
+		"./lib/onboarding-profile": {
+			"types": "./lib/onboarding-profile.ts",
+			"default": "./lib/onboarding-profile.ts"
 		}
 	},
 	"scripts": {

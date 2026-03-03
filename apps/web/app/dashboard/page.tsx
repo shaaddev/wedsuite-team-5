@@ -1,7 +1,8 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { getOnboardingProfile } from "@websuite/backend/lib/onboarding-profile";
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { DashboardContent } from "@/components/dashboard-content";
+import { getServerSession } from "@/lib/auth";
 import { getOnboardingState } from "@/lib/onboarding";
 
 export const metadata: Metadata = {
@@ -11,17 +12,13 @@ export const metadata: Metadata = {
 };
 
 export default async function DashboardPage() {
-	const { userId } = await auth();
-	if (!userId) {
+	const session = await getServerSession();
+	if (!session?.user?.id) {
 		redirect("/sign-in");
 	}
 
-	const user = await currentUser();
-	if (!user) {
-		redirect("/sign-in");
-	}
-
-	const { onboardingComplete } = getOnboardingState(user.publicMetadata);
+	const profile = await getOnboardingProfile(session.user.id);
+	const { onboardingComplete } = getOnboardingState(profile);
 	if (!onboardingComplete) {
 		redirect("/onboarding");
 	}
